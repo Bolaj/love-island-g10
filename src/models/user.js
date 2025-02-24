@@ -1,39 +1,81 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema({
-    firstName:{
-        type: String,
-        required:true
+const datingUserSchema = new mongoose.Schema(
+  {
+    firstName: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    lastName:{
-        type: String,
-        required:true
+    lastName: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    gender: String,
-    age: Number,
+    gender: {
+      type: String,
+      enum: ["Male", "Female", "Other"],
+    },
+    age: {
+      type: Number,
+      min: [18, "Users must be at least 18 years old"],
+    },
     email: {
-        type: String,
-        unique: true
+      type: String,
+      required: [true, "Email is required"],
+      unique: true,
+      lowercase: true,
+      trim: true,
+      match: [/.+\@.+\..+/, "Please enter a valid email address"],
     },
-    password: String,
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+      minlength: [6, "Password must be at least 6 characters long"],
+    },
     username: {
-        type: String,
-        unique: true
+      type: String,
+      required: [true, "Username is required"],
+      unique: true,
+      trim: true,
     },
-    phone: String,
-    bio: String,
-    hobbies: [String],
-    occupation: String,
-    dob: Date,
-    location: String,
-    stateOfOrigin: String,
-    isRich:{
-        type: Boolean,
-        required: true
+    phone: {
+      type: String,
+      match: [/^\d{10,15}$/, "Please enter a valid phone number"],
     },
-    picture: String
-}, {timestamps: true});
+    bio: {
+      type: String,
+      maxlength: [300, "Bio cannot exceed 300 characters"],
+      default: null,
+    },
+    hobbies: {
+      type: [String],
+      default: [],
+    },
+    occupation: {
+      type: String,
+      default: null,
+    },
+    dob: {
+      type: Date,
+      default: null,
+    },
+    location: {
+      type: String,
+      default: null,
+    },
+    stateOfOrigin: {
+      type: String,
+      default: null,
+    },
+    picture: {
+      type: String,
+      default: "default-profile.jpg",
+    },
+  },
+  { timestamps: true }
+);
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", datingUserSchema);
 
 module.exports = User;
