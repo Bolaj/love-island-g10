@@ -1,8 +1,15 @@
 const express = require('express');
-const userController = require('../controllers/userController');
-
+const { getAllUsers, signUp, verifyAccount, resendVerificationCode, login, deleteUser} = require('../controllers/userController');
+const authMiddleware = require('../auth/authMiddleware');
 const userRouter = express.Router();
 
-userRouter.post('/sign-up', userController);
+userRouter.get('/users', authMiddleware, getAllUsers)
+userRouter.post('/users/sign-up', signUp);
+userRouter.post('/users/verify-account', verifyAccount);
+userRouter.post('/users/resend-verification-code', resendVerificationCode);
+userRouter.post('/users/login', login);
+userRouter.post('/users/delete/:id', authMiddleware, deleteUser)
+
+
 
 module.exports = userRouter;

@@ -16,6 +16,10 @@ const datingUserSchema = new mongoose.Schema(
       type: String,
       enum: ["Male", "Female", "Other"],
     },
+    interestedIn:{
+      type: [String],
+      required:true,
+    },
     age: {
       type: Number,
       min: [18, "Users must be at least 18 years old"],
@@ -72,6 +76,9 @@ const datingUserSchema = new mongoose.Schema(
       type: String,
       default: "default-profile.jpg",
     },
+    isVerified: { type: Boolean, default: false },
+    verificationCode: { type: String },
+    verificationCodeExpires: Date,
   },
   { timestamps: true }
 );
