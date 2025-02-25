@@ -7,25 +7,37 @@ const generateVerificationCode = () => crypto.randomInt(100000, 999999).toString
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const allUsers = await User.find();
+    const page = parseInt(req.query.page) || 1; 
+    const limit = parseInt(req.query.limit) || 10; 
+    const skip = (page - 1) * limit;
+
+    const allUsers = await User.find().skip(skip).limit(limit);
+    const totalUsers = await User.countDocuments(); 
+
     if (!allUsers || allUsers.length === 0) {
-      return res.status(404).json({ message: "No User Found" });
+      return res.status(404).json({ message: "No Users Found" });
     }
 
     res.status(200).json({
-      message: "Successfully fetched all Users",
-      allUsers,
+      message: "Successfully fetched Users",
+      totalUsers,
+      currentPage: page,
+      totalPages: Math.ceil(totalUsers / limit),
+      users: allUsers,
     });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Error fetching users", error: error.message });
-
   }
 };
+
 exports.signUp = async(req, res) => {
    try {
     const { firstName, lastName, gender, age, email, password, username, phone, bio, interestedIn, hobbies, occupation, dob, location, stateOfOrigin } = req.body
 
+    if (!Array.isArray(interestedIn) || interestedIn.length === 0) {
+      return res.status(400).json({ message: "InterestedIn field must be a non-empty array" });
+    }
     const existingUserName = await User.findOne({ username})
     if (existingUserName) return res.status(400).json({ message: 'Username already exists' })
     const existingUser = await User.findOne({ email })

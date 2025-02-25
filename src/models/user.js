@@ -16,9 +16,15 @@ const datingUserSchema = new mongoose.Schema(
       type: String,
       enum: ["Male", "Female", "Other"],
     },
-    interestedIn:{
-      type: [String],
-      required:true,
+    interestedIn: {
+      type: [String], 
+      required: [true, "InterestedIn field is required"],
+      validate: {
+        validator: function (arr) {
+          return arr.length > 0; 
+        },
+        message: "InterestedIn cannot be empty",
+      },
     },
     age: {
       type: Number,
