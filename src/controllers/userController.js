@@ -7,26 +7,32 @@ const generateVerificationCode = () => crypto.randomInt(100000, 999999).toString
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1; 
-    const limit = parseInt(req.query.limit) || 10; 
-    const skip = (page - 1) * limit;
+    const { interestedIn, hobbies, page = 1, limit = 10 } = req.query;
 
-    const allUsers = await User.find().skip(skip).limit(limit);
-    const totalUsers = await User.countDocuments(); 
+    let filter = {};
 
-    if (!allUsers || allUsers.length === 0) {
+    if (interestedIn) {
+      filter.interestedIn = interestedIn; 
+    }
+
+    if (hobbies) {
+      filter.hobbies = { $in: hobbies.split(",") }; 
+    }
+
+    const users = await User.find(filter)
+      .skip((page - 1) * limit)
+      .limit(Number(limit));
+
+    if (!users.length) {
       return res.status(404).json({ message: "No Users Found" });
     }
 
     res.status(200).json({
-      message: "Successfully fetched Users",
-      totalUsers,
-      currentPage: page,
-      totalPages: Math.ceil(totalUsers / limit),
-      users: allUsers,
+      message: "Successfully fetched users",
+      users,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "Error fetching users", error: error.message });
   }
 };
