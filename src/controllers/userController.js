@@ -37,6 +37,25 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
+exports.getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password -verificationCode -verificationCodeExpires");
+
+    if (!user) {
+      return res.status(404).json({ message: "User Not Found" });
+    }
+
+    res.status(200).json({
+      message: "User fetched successfully",
+      user,
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error fetching user", error: error.message });
+  }
+};
+
 exports.signUp = async(req, res) => {
    try {
     const { firstName, lastName, gender, age, email, password, username, phone, bio, interestedIn, hobbies, occupation, dob, location, stateOfOrigin } = req.body
@@ -153,7 +172,7 @@ exports.verifyAccount = async (req, res) => {
       if (!isPasswordValid) return res.status(400).json({ message: "Invalid credentials" });
       if (!user.isVerified) return res.status(403).json({ message: "Account is not verified" });
       const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET, {
-        expiresIn: "1d",
+        expiresIn: "1h",
       });
       return res.status(200).json({ message: "Logged in successfully", token });
 
