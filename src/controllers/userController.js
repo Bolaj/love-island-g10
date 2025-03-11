@@ -209,3 +209,36 @@ exports.searchUsers = async (req, res) => {
 
   }
 };
+
+
+exports.reportProfile = async (req, res) => {
+  try {
+    const { userId, username, description } = req.body;
+    const reportedBy = req.user._id
+
+    let filter = {};
+
+    if (interestedIn) {
+      filter.interestedIn = { $in: interestedIn.split(",") };
+    }
+
+    if (hobbies) {
+      filter.hobbies = { $in: hobbies.split(",") };
+    }
+
+    const users = await User.find(filter);
+
+    if (!users.length) {
+      return res.status(404).json({ message: "No Users Found" });
+    }
+
+    res.status(200).json({
+      message: "Successfully fetched users",
+      users,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error fetching users", error: error.message });
+
+  }
+};

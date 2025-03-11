@@ -1,5 +1,25 @@
 const mongoose = require("mongoose");
 
+const reportSchema = new mongoose.Schema({
+  reportedBy: {
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User',
+    required: true,
+  },
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  }, 
+
+  timestamps: true,
+
+});
+
 const datingUserSchema = new mongoose.Schema(
   {
     firstName: {
@@ -85,9 +105,17 @@ const datingUserSchema = new mongoose.Schema(
     isVerified: { type: Boolean, default: false },
     verificationCode: { type: String },
     verificationCodeExpires: Date,
-  },
-  { timestamps: true }
-);
+
+    userId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+
+      reports: [reportSchema]
+
+    })
+  { timestamps: true };
 
 const User = mongoose.model("User", datingUserSchema);
 
