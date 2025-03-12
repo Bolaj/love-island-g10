@@ -9,7 +9,7 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 const appRouter = require('./src/app')
-app.use("", appRouter)
+app.use("/api", appRouter)
 
 
 const port = process.env.PORT
